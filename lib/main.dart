@@ -6,6 +6,8 @@ import 'package:provider_hive/productPage.dart';
 import 'dart:math';
 import 'dart:developer';
 
+import 'package:provider_hive/userData.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -13,8 +15,15 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ProductData(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ProductData>(
+          create: (_) => ProductData(),
+        ),
+        ChangeNotifierProvider<UserData>(
+          create: (_) => UserData(),
+        )
+      ],
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
@@ -79,6 +88,30 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Center(
                     child: Text('Cart'),
                   )),
+            ),
+
+            //User interaction
+            Consumer<UserData>(
+              builder: (context, myUserData, child) => Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(myUserData.isLoggedIn
+                          ? 'User is logged In'
+                          : 'User is logged Out'
+                      // 'User is ${myUserData.isLoggedIn ? 'logged In' : 'logged Out'}'
+                      ),
+                  FlatButton(
+                      color: Colors.black12,
+                      onPressed: () {
+                        myUserData.alterLoggedInStatus();
+                        print(myUserData.isLoggedIn);
+                      },
+                      child: Center(
+                        child:
+                            Text(myUserData.isLoggedIn ? 'Log Out' : 'Log In'),
+                      ))
+                ],
+              ),
             )
           ],
         ),
